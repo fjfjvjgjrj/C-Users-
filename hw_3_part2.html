@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+            function checkEvenOdd(num) {
+        return num % 2 === 0 ? "Парне" : "Непарне";
+    }
+
+    function checkNumbers() {
+        let resultText = "";
+        for (let i = 1; i <= 10; i++) {
+            resultText += `Число ${i} - ${checkEvenOdd(i)}<br>`;
+        }
+        document.getElementById("result").innerHTML = resultText;
+    }
+
+       function changeBackgroundColor() {
+        const colors = ["red", "blue", "green", "yellow", "purple"];
+        const randomIndex = Math.floor(Math.random() * colors.length);
+        document.body.style.backgroundColor = colors[randomIndex];
+      }
+
+
+    </script>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    button {
+     padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;}
+  </style>
+</head>
+<body>
+ <button id="randomColorButton" onclick="changeBackgroundColor()" >Встановити рандомний кольор</button>
+ <p id="randomColor"></p>
+<script src="script.js"> </script>
+ <input type="number" id="math" name="username" placeholder="Введіть число" required>
+  <button onclick="checkNumbers()">Перевірити числа</button>
+  <p id="result"></p>
+<script src="script2.js"> </script>
+</body>
+</html>

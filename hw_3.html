@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+        function squareNumber() {
+            let num = document.getElementById("math").value;
+            let result = num * num;
+            document.getElementById("result").innerText = "Результат: " + result;
+            }
+
+        function squareNumber1() {
+            let num = document.getElementById("math").value;
+            let result = num * num * num;
+            document.getElementById("result").innerText = "Результат: " + result;
+
+        }
+
+
+            function squareNumber2() {
+            let num = document.getElementById("math").value;
+            let result = num%5;
+            document.getElementById("result").innerText = "Результат: " + result;
+      }
+    </script>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    button {
+     padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;}
+  </style>
+</head>
+<body>
+<script src="script.js"> </script>
+ <input type="number" id="math" name="username" placeholder="Введіть число" required>
+ <button onclick="squareNumber()">Обчислити квадрат</button>
+<button onclick="squareNumber1()">Обчислити куб</button>
+<button onclick="squareNumber2()">Обчислити залишок від ділення на 5</button>
+ <p id="result"></p>
+
+</body>
+</html>
