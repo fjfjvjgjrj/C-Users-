@@ -1,52 +1,39 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, field_validator
-from typing import List
-from datetime import datetime
-import uvicorn
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import HTTPBasic, HTTPBasicCredentials, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 app = FastAPI()
 
+basic_auth = HTTPBasic()
 
+# OAuth2 (без JWT, простий токен)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-class Movie(BaseModel):
-    id: int
-    title: str
-    director: str
-    release_year: int  = Field(..., gt=1800)
-    rating: float = Field(..., ge=0.0, le=10.0)
+users = {
+    "admin": "admin123"
+}
 
-    @field_validator('release_year')
-    @classmethod
-    def check_year_not_in_future(cls, v):
-        current_year = datetime.now().year
-        if v > current_year:
-            raise ValueError("Рік випуску не може бути в майбутньому")
-        return v
+@app.get("/basic-protected")
+def basic_protected(credentials: HTTPBasicCredentials = Depends(basic_auth)):
+    correct_password = users.get(credentials.username)
+    if not correct_password or correct_password != credentials.password:
+        raise HTTPException(status_code=401, detail="Неправильні дані")
+    return {"message": f"Привіт, {credentials.username}!"}
 
-movies_db: List[Movie] = []
+@app.post("/token")
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    username = form_data.username
+    password = form_data.password
+    if users.get(username) != password:
+        raise HTTPException(status_code=400, detail="Невірні логін або пароль")
+    return {"access_token": f"token-for-{username}", "token_type": "bearer"}
 
-@app.get("/movies", response_model=List[Movie])
-def get_movies():
-    return movies_db
+@app.get("/oauth2-protected")
+def oauth2_protected(token: str = Depends(oauth2_scheme)):
+    if not token.startswith("token-for-"):
+        raise HTTPException(status_code=401, detail="Недійсний токен")
+    username = token.removeprefix("token-for-")
+    return {"message": f"Ти авторизований як {username}"}
 
-@app.post("/movies", response_model=Movie, status_code=201)
-def add_movie(movie: Movie):
-    if any(existing.id == movie.id for existing in movies_db):
-        raise HTTPException(status_code=400, detail="Фільм з таким ID вже існує")
-    movies_db.append(movie)
-    return movie
-
-@app.get("/movies/{id}", response_model=Movie)
-def get_movie(id: int):
-    for movie in movies_db:
-        if movie.id == id:
-            return movie
-    raise HTTPException(status_code=404, detail="Фільм не знайдено")
-
-@app.delete("/movies/{id}", status_code=204)
-def delete_movie(id: int):
-    for i, movie in enumerate(movies_db):
-        if movie.id == id:
-            del movies_db[i]
-            return
-    raise HTTPException(status_code=404, detail="Фільм не знайдено")
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
