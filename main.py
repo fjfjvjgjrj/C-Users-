@@ -5,7 +5,7 @@ app = FastAPI()
 
 basic_auth = HTTPBasic()
 
-# OAuth2 (без JWT, простий токен)
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 users = {
